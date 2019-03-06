@@ -7,6 +7,7 @@
 #
 
 import getopt
+import os
 import re
 import requests
 import signal
@@ -15,6 +16,7 @@ import subprocess
 import sys
 import time
 import urllib3
+import validators
 from fake_useragent import UserAgent
 from termcolor import colored
 
@@ -33,10 +35,10 @@ def logo():
 
 def usage():
     print('Usage: dirdigger.py [-h] | -u <url> -w <wordlist_file> [-i <status_codes>] [-t <timeout>]');
+    print()
 
 def help():
-    print('Usage: dirdigger.py [-h] | -u <url> -w <wordlist_file> [-i <status_codes>] [-t <timeout>]');
-    print()
+    usage()
     print('Options:')
     print(' -h                  Show this help message and exit')
     print(' -u <url>, --url=<url>')
@@ -93,7 +95,7 @@ def signal_handler(s, frame):
         sys.exit()
 
 def main(argv):
-    if (len(argv) < 1):
+    if (len(argv) != 1 and len(argv) < 4):
         usage()
         sys.exit(1)
 
@@ -103,16 +105,25 @@ def main(argv):
         usage()
         sys.exit(1)
 
+    optsdict = dict(opts)
+
+    if ('-h' in optsdict):
+        help()
+        sys.exit()
+
     for opt, arg in opts:
-        if opt == '-h':
-            help()
-            sys.exit()
-        elif opt in ('-u', '--url'):
+        if opt in ('-u', '--url'):
             base_url = arg
+            if not validators.url(base_url):
+                print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Invalid URL: ' + colored(base_url, 'red'))
+                print()
+                sys.exit(1)
         elif opt in ('-w', '--wordlist'):
             wordlist_file = arg
-
-    optsdict = dict(opts)
+            if not os.path.isfile(wordlist_file):
+                print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Wordlist file not found or not readable: ' + colored(wordlist_file, 'red'))
+                print()
+                sys.exit(1)
 
     if ('--ignore' in optsdict):
         ignore_status = optsdict['--ignore'].split(',')
@@ -137,7 +148,10 @@ def main(argv):
 
     ua = UserAgent(cache=False, fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36').random
     hostname = base_url.split("://")[1].split("/")[0]
-    hostip =  socket.gethostbyname(hostname)
+    try:
+        hostip =  socket.gethostbyname(hostname)
+    except socket.gaierror:
+        hostip = ''
 
     print('[+] Base URL:           ' + colored(base_url, 'white', attrs=['bold']))
     print('[+] Hostname:           ' + hostname)
