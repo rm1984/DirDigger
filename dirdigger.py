@@ -10,6 +10,7 @@ import getopt
 import re
 import requests
 import signal
+import socket
 import subprocess
 import sys
 import time
@@ -59,25 +60,28 @@ def test(url, ua, timeout):
 
     return ret
 
-def show(status, url):
-    str_status = str(status)
-
-    if (status == 0):
-        status = colored('ERR', 'red', attrs=['reverse', 'bold'])
-    elif (status == 200):
-        status = colored(str_status, 'green')
-    elif ((status == 301) or (status == 302)):
-        status = colored(str_status, 'yellow')
-    elif ((status == 400) or (status == 401) or (status == 403) or (status == 404) or (status == 405)):
-        status = colored(str_status, 'red')
-    elif (status == 408):
-        status = colored(str_status, 'magenta')
-    elif ((status == 500) or (status == 501) or (status == 502) or (status == 503) or (status == 504) or (status == 550)):
-        status = colored(str_status, 'red')
+def show(status, url, ignore_status):
+    if (ignore_status is not None) and (str(status) in ignore_status):
+        pass
     else:
-        status = str_status
+        str_status = str(status)
 
-    print('[+] ' + status + ' - ' + url)
+        if (status == 0):
+            status = colored('ERR', 'red', attrs=['reverse', 'bold'])
+        elif (status == 200):
+            status = colored(str_status, 'green')
+        elif ((status == 301) or (status == 302)):
+            status = colored(str_status, 'yellow')
+        elif ((status == 400) or (status == 401) or (status == 403) or (status == 404) or (status == 405)):
+            status = colored(str_status, 'red')
+        elif (status == 408):
+            status = colored(str_status, 'magenta')
+        elif ((status == 500) or (status == 501) or (status == 502) or (status == 503) or (status == 504) or (status == 550)):
+            status = colored(str_status, 'red')
+        else:
+            status = str_status
+
+        print('[+] ' + status + ' - ' + url)
 
 def line_count(file):
     return int(subprocess.check_output('wc -l {}'.format(file), shell=True).split()[0])
@@ -132,26 +136,30 @@ def main(argv):
     logo()
 
     ua = UserAgent(cache=False, fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36').random
+    hostname = base_url.split("://")[1].split("/")[0]
+    hostip =  socket.gethostbyname(hostname)
 
-    print('[+] Base URL: ' + base_url)
-    print('[+] Wordlist: ' + wordlist_file)
-    print('[+] Words count: ' + str(line_count(wordlist_file)))
-    print('[+] Random user agent: ' + ua)
+    print('[+] Base URL:           ' + colored(base_url, 'white', attrs=['bold']))
+    print('[+] Hostname:           ' + hostname)
+    print('[+] Host IP:            ' + hostip)
+    print('[+] Wordlist:           ' + wordlist_file)
+    print('[+] Words count:        ' + str(line_count(wordlist_file)))
+    print('[+] Random U.A.:        ' + ua)
     if ignore_status is not None:
         print('[+] Ignored HTTP codes: ' + ', '.join(map(str, ignore_status)))
 #    print('[+] Mode: DIRECTORY (adding trailing \'/\' when needed)')
-    print('[+] Timeout: ' + str(timeout) + ' seconds')
+    print('[+] Timeout:            ' + str(timeout) + ' seconds')
     print('[+]')
 
     t = test(base_url, ua, timeout)
-    show(t, base_url)
+    show(t, base_url, ignore_status)
 
     if (t != 0):
         with open(wordlist_file, 'r') as wordlist:
             for word in wordlist:
                 url = base_url + word.strip() + '/'
                 t = test(url, ua, timeout)
-                show(t, url)
+                show(t, url, ignore_status)
 
     print('Elapsed time: ' + str(int(time.time() - start)) + ' seconds')
     print('Goodbye!')
