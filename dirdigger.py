@@ -31,10 +31,10 @@ def logo():
     print()
 
 def usage():
-    print('Usage: dirdigger.py [-h] | -u <url> -w <wordlist_file> [-i <status_codes>]');
+    print('Usage: dirdigger.py [-h] | -u <url> -w <wordlist_file> [-i <status_codes>] [-t <timeout>]');
 
 def help():
-    print('Usage: dirdigger.py [-h] | -u <url> -w <wordlist_file> [-i <status_codes>]');
+    print('Usage: dirdigger.py [-h] | -u <url> -w <wordlist_file> [-i <status_codes>] [-t <timeout>]');
     print()
     print('Options:')
     print(' -h                  Show this help message and exit')
@@ -44,21 +44,27 @@ def help():
     print('                     The file containing the wordlist')
     print(' -i <status_codes>, --ignore=<status_codes>')
     print('                     HTTP statuses to be ignored (eg: 404,302)')
+    print(' -t <timeout>, --timeout=<timeout>')
+    print('                     Request timeout in seconds (default: 5)')
     print()
 
-def test(url, ua):
+def test(url, ua, timeout):
     try:
-        r = requests.head(url, headers={'User-Agent': ua}, verify=False, timeout=(1,1))
+        r = requests.head(url, headers={'User-Agent': ua}, verify=False, timeout=(timeout, timeout))
         ret = r.status_code
     except requests.ReadTimeout:
         ret = 408
+    except requests.exceptions.RequestException:
+        ret = 0
 
     return ret
 
 def show(status, url):
     str_status = str(status)
 
-    if (status == 200):
+    if (status == 0):
+        status = colored('ERR', 'red', attrs=['reverse', 'bold'])
+    elif (status == 200):
         status = colored(str_status, 'green')
     elif ((status == 301) or (status == 302)):
         status = colored(str_status, 'yellow')
@@ -88,7 +94,7 @@ def main(argv):
         sys.exit(1)
 
     try:
-        opts, args = getopt.getopt(argv, 'hu:w:i:', ['url=', 'wordlist=', 'ignore='])
+        opts, args = getopt.getopt(argv, 'hu:w:i:t:', ['url=', 'wordlist=', 'ignore=', 'timeout='])
     except getopt.GetoptError:
         usage()
         sys.exit(1)
@@ -111,6 +117,13 @@ def main(argv):
     else:
         ignore_status = None
 
+    if ('--timeout' in optsdict):
+        timeout = int(optsdict['--timeout'])
+    elif ('-t' in optsdict):
+        timeout = int(optsdict['-t'])
+    else:
+        timeout = 5
+
     if (base_url[-1] != '/'):
         base_url += '/'
 
@@ -127,22 +140,27 @@ def main(argv):
     if ignore_status is not None:
         print('[+] Ignored HTTP codes: ' + ', '.join(map(str, ignore_status)))
 #    print('[+] Mode: DIRECTORY (adding trailing \'/\' when needed)')
+    print('[+] Timeout: ' + str(timeout) + ' seconds')
+    print('[+]')
 
-    t = test(base_url, ua)
+    t = test(base_url, ua, timeout)
     show(t, base_url)
 
-    with open(wordlist_file, 'r') as wordlist:
-        for word in wordlist:
-            url = base_url + word.strip() + '/'
-            t = test(url, ua)
-            show(t, url)
+    if (t != 0):
+        with open(wordlist_file, 'r') as wordlist:
+            for word in wordlist:
+                url = base_url + word.strip() + '/'
+                t = test(url, ua, timeout)
+                show(t, url)
 
-    end = time.time() - start
-
-    print('Elapsed time: ' + str(int(end)) + ' seconds')
+    print('Elapsed time: ' + str(int(time.time() - start)) + ' seconds')
     print('Goodbye!')
     sys.exit()
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     main(sys.argv[1:])
+
+#### TODO:
+#### - output file
+#### - handle dirs or files
