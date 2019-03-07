@@ -34,24 +34,6 @@ def logo():
     print(colored('              Coded by: Riccardo Mollo', 'cyan'))
     print()
 
-def usage():
-    print('Usage: dirdigger.py [-h] | -u <url> -w <wordlist_file> [-i <status_codes>] [-t <timeout>]');
-    print()
-
-def help():
-    usage()
-    print('Options:')
-    print(' -h                  Show this help message and exit')
-    print(' -u <url>, --url=<url>')
-    print('                     The base URL to start the scan from')
-    print(' -w <wordlist_file>, --wordlist=<wordlist_file>')
-    print('                     The file containing the wordlist')
-    print(' -i <status_codes>, --ignore=<status_codes>')
-    print('                     HTTP statuses to be ignored (eg: 404,302)')
-    print(' -t <timeout>, --timeout=<timeout>')
-    print('                     Request timeout in seconds (default: 5)')
-    print()
-
 def test(url, ua, timeout):
     try:
         r = requests.head(url, headers={'User-Agent': ua}, verify=False, timeout=(timeout, timeout))
@@ -99,6 +81,7 @@ def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--url', help = 'The base URL to start the scan from', required = True)
     parser.add_argument('-w', '--wordlist', help = 'The file containing the wordlist', required = True)
+    parser.add_argument('-m', '--mode', help = 'Scan mode is "dir" or "file" (default: "dir")', required = False, default = 'dir')
     parser.add_argument('-i', '--ignore-statuses', help = 'HTTP statuses to be ignored (eg: 404,302)', required = False, default = None)
     parser.add_argument('-t', '--timeout', help = 'Request timeout in seconds (default: 5)', type = int, required = False, default = 5)
     args = parser.parse_args()
@@ -114,6 +97,13 @@ def main(argv):
 
     if not os.path.isfile(wordlist_file):
         print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Wordlist file not found or not readable: ' + colored(wordlist_file, 'red'))
+        print()
+        sys.exit(1)
+
+    mode = args.mode
+
+    if (mode != 'dir' and mode != 'file'):
+        print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Invalid mode: ' + colored(mode, 'red'))
         print()
         sys.exit(1)
 
@@ -135,15 +125,16 @@ def main(argv):
     hostname = base_url.split("://")[1].split("/")[0]
 
     try:
-        hostip =  socket.gethostbyname(hostname)
+        hostip = socket.gethostbyname(hostname)
     except socket.gaierror:
         hostip = ''
 
     print('[+] Base URL:            ' + colored(base_url, 'white', attrs=['bold']))
-    print('[+] Hostname:            ' + hostname)
-    print('[+] Host IP:             ' + hostip)
+    print('[+]   Hostname:          ' + hostname)
+    print('[+]   Host IP:           ' + hostip)
     print('[+] Wordlist:            ' + wordlist_file)
-    print('[+] Words count:         ' + str(line_count(wordlist_file)))
+    print('[+]   Words count:       ' + str(line_count(wordlist_file)))
+    print('[+] Scan mode:           ' + mode)
     print('[+] Random user agent:   ' + ua)
     if ignored_statuses is not None:
         print('[+] Ignored HTTP codes:  ' + ', '.join(map(str, ignored_statuses)))
@@ -157,7 +148,11 @@ def main(argv):
     if (t != 0):
         with open(wordlist_file, 'r') as wordlist:
             for word in wordlist:
-                url = base_url + word.strip() + '/'
+                url = base_url + word.strip()
+
+                if (mode == 'dir'):
+                    url += '/'
+
                 t = test(url, ua, timeout)
                 show(t, url, ignored_statuses)
 
