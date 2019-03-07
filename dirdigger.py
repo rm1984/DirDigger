@@ -6,6 +6,7 @@
 # Coded by: Riccardo Mollo (riccardomollo84@gmail.com)
 #
 
+import argparse
 import getopt
 import os
 import re
@@ -62,8 +63,8 @@ def test(url, ua, timeout):
 
     return ret
 
-def show(status, url, ignore_status):
-    if (ignore_status is not None) and (str(status) in ignore_status):
+def show(status, url, ignored_statuses):
+    if (ignored_statuses is not None) and (str(status) in ignored_statuses):
         pass
     else:
         str_status = str(status)
@@ -95,49 +96,33 @@ def signal_handler(s, frame):
         sys.exit()
 
 def main(argv):
-    if (len(argv) != 1 and len(argv) < 4):
-        usage()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-u', '--url', help = 'The base URL to start the scan from', required = True)
+    parser.add_argument('-w', '--wordlist', help = 'The file containing the wordlist', required = True)
+    parser.add_argument('-i', '--ignore-statuses', help = 'HTTP statuses to be ignored (eg: 404,302)', required = False, default = None)
+    parser.add_argument('-t', '--timeout', help = 'Request timeout in seconds (default: 5)', type = int, required = False, default = 5)
+    args = parser.parse_args()
+
+    base_url = args.url
+
+    if not validators.url(base_url):
+        print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Invalid URL: ' + colored(base_url, 'red'))
+        print()
         sys.exit(1)
 
-    try:
-        opts, args = getopt.getopt(argv, 'hu:w:i:t:', ['url=', 'wordlist=', 'ignore=', 'timeout='])
-    except getopt.GetoptError:
-        usage()
+    wordlist_file = args.wordlist
+
+    if not os.path.isfile(wordlist_file):
+        print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Wordlist file not found or not readable: ' + colored(wordlist_file, 'red'))
+        print()
         sys.exit(1)
 
-    optsdict = dict(opts)
+    ignored_statuses = args.ignore_statuses
 
-    if ('-h' in optsdict):
-        help()
-        sys.exit()
+    if ignored_statuses is not None:
+        ignored_statuses = ignored_statuses.split(',')
 
-    for opt, arg in opts:
-        if opt in ('-u', '--url'):
-            base_url = arg
-            if not validators.url(base_url):
-                print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Invalid URL: ' + colored(base_url, 'red'))
-                print()
-                sys.exit(1)
-        elif opt in ('-w', '--wordlist'):
-            wordlist_file = arg
-            if not os.path.isfile(wordlist_file):
-                print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Wordlist file not found or not readable: ' + colored(wordlist_file, 'red'))
-                print()
-                sys.exit(1)
-
-    if ('--ignore' in optsdict):
-        ignore_status = optsdict['--ignore'].split(',')
-    elif ('-i' in optsdict):
-        ignore_status = optsdict['-i'].split(',')
-    else:
-        ignore_status = None
-
-    if ('--timeout' in optsdict):
-        timeout = int(optsdict['--timeout'])
-    elif ('-t' in optsdict):
-        timeout = int(optsdict['-t'])
-    else:
-        timeout = 5
+    timeout = int(args.timeout)
 
     if (base_url[-1] != '/'):
         base_url += '/'
@@ -148,32 +133,33 @@ def main(argv):
 
     ua = UserAgent(cache=False, fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36').random
     hostname = base_url.split("://")[1].split("/")[0]
+
     try:
         hostip =  socket.gethostbyname(hostname)
     except socket.gaierror:
         hostip = ''
 
-    print('[+] Base URL:           ' + colored(base_url, 'white', attrs=['bold']))
-    print('[+] Hostname:           ' + hostname)
-    print('[+] Host IP:            ' + hostip)
-    print('[+] Wordlist:           ' + wordlist_file)
-    print('[+] Words count:        ' + str(line_count(wordlist_file)))
-    print('[+] Random U.A.:        ' + ua)
-    if ignore_status is not None:
-        print('[+] Ignored HTTP codes: ' + ', '.join(map(str, ignore_status)))
+    print('[+] Base URL:            ' + colored(base_url, 'white', attrs=['bold']))
+    print('[+] Hostname:            ' + hostname)
+    print('[+] Host IP:             ' + hostip)
+    print('[+] Wordlist:            ' + wordlist_file)
+    print('[+] Words count:         ' + str(line_count(wordlist_file)))
+    print('[+] Random user agent:   ' + ua)
+    if ignored_statuses is not None:
+        print('[+] Ignored HTTP codes:  ' + ', '.join(map(str, ignored_statuses)))
 #    print('[+] Mode: DIRECTORY (adding trailing \'/\' when needed)')
-    print('[+] Timeout:            ' + str(timeout) + ' seconds')
+    print('[+] Timeout:             ' + str(timeout) + ' seconds')
     print('[+]')
 
     t = test(base_url, ua, timeout)
-    show(t, base_url, ignore_status)
+    show(t, base_url, ignored_statuses)
 
     if (t != 0):
         with open(wordlist_file, 'r') as wordlist:
             for word in wordlist:
                 url = base_url + word.strip() + '/'
                 t = test(url, ua, timeout)
-                show(t, url, ignore_status)
+                show(t, url, ignored_statuses)
 
     print('Elapsed time: ' + str(int(time.time() - start)) + ' seconds')
     print('Goodbye!')
