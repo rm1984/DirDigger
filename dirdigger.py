@@ -74,7 +74,7 @@ def line_count(file):
     return int(subprocess.check_output('wc -l {}'.format(file), shell=True).split()[0])
 
 def signal_handler(s, frame):
-    if (s == 2):
+    if s == 2: # SIGINT
         print('You pressed Ctrl+C!')
         print('Goodbye!')
         sys.exit()
@@ -111,7 +111,6 @@ def main(argv):
         sys.exit(1)
 
     file_extensions = args.file_extensions
-
     ignored_statuses = args.ignore_statuses
     timeout = int(args.timeout)
 
