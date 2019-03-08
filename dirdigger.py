@@ -118,9 +118,6 @@ def main(argv):
         base_url += '/'
 
     start = time.time()
-
-    logo()
-
     hostname = base_url.split("://")[1].split("/")[0]
 
     try:
@@ -129,9 +126,11 @@ def main(argv):
         hostip = ''
 
     try:
-        ua = UserAgent(cache=False, fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36').random
+        ua = UserAgent(cache=False, fallback='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)').random
     except fake_useragent.errors.FakeUserAgentError:
-        print("ROTTO USERAGENTE!")
+        ua = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+
+    logo()
 
     print('[+] Base URL:            ' + colored(base_url, 'white', attrs=['bold']))
     print('[+]   Hostname:          ' + hostname)
