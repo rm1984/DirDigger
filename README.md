@@ -23,4 +23,4 @@ optional arguments:
 
 **Preview:**
 
-<a href="http://tinypic.com?ref=11qtfyh" target="_blank"><img src="http://i66.tinypic.com/11qtfyh.png" border="0" alt="DirDigger"></a>
+<a href="https://ibb.co/pyKYDKz"><img src="https://i.ibb.co/pyKYDKz/Screenshot-from-2019-04-09-12-21-24.png" alt="DirDigger" border="0" /></a>
