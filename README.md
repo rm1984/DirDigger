@@ -23,4 +23,4 @@ optional arguments:
 
 **Preview:**
 
-<a href="https://imgflip.com/gif/dirdigger"><img src="https://i.imgflip.com/dirdigger.gif" title="DirDigger"/></a>
+<a href="http://tinypic.com?ref=11qtfyh" target="_blank"><img src="http://i66.tinypic.com/11qtfyh.png" border="0" alt="DirDigger"></a>
