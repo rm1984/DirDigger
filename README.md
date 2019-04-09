@@ -2,7 +2,7 @@
 
 **DirDigger** is a simple Python script that tries to do something like DIRB or DirBuster.
 
-**Usage**
+**Usage:**
 ```
 usage: dirdigger.py [-h] -u URL -w WORDLIST [-m MODE] [-e FILE_EXTENSIONS]
                     [-i IGNORE_STATUSES] [-t TIMEOUT]
@@ -21,5 +21,6 @@ optional arguments:
                         Request timeout in seconds (default: 5)
 ```
 
-**Preview**
-<a href="https://imgflip.com/gif/dirdigger"><img src="https://i.imgflip.com/dirdigger.gif" title="made at imgflip.com"/></a>
+**Preview:**
+
+<a href="https://imgflip.com/gif/dirdigger"><img src="https://i.imgflip.com/dirdigger.gif" title="DirDigger"/></a>
