@@ -1,5 +1,5 @@
 requests==2.21.0
 fake_useragent==0.1.11
 validators==0.12.4
-urllib3==1.24.1
+urllib3==1.24.2
 termcolor==1.1.0
