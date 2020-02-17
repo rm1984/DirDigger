@@ -904,6 +904,7 @@ add_admin
 add_link.%EXT%
 add.php
 addadmin.%EXT%
+additions
 addNodeListener
 addons
 AddressBookJ2WB
@@ -2365,6 +2366,7 @@ check.php
 checkadmin
 checkadmin.php
 checkapache.html
+CheckCredentials
 checked_accounts.txt
 checklogin
 checklogin.php
@@ -2417,6 +2419,7 @@ client_admin
 ClientAccessPolicy.xml
 clientadmin
 cliente/downloads/h4xor.php
+clienti
 clients
 clients.mdb
 clients.sql
@@ -2701,6 +2704,7 @@ customers.sql.gz
 customers.sqlite
 customers.txt
 customers.xls
+CustomerService
 cvs
 CVS
 cvs/
@@ -2832,6 +2836,9 @@ detail
 details
 dettagli
 dettaglio
+DettaglioArea
+DettaglioArea.aspx
+DettaglioCentro
 dettaglioVeicolo
 dev
 dev.php
@@ -2965,6 +2972,7 @@ ebayadmin
 ecadmin
 ecartadmin
 echo
+ecommerce
 ecosystem.json
 edit
 edit.php
@@ -2984,9 +2992,12 @@ ehthumbs.db
 ejb
 ejbSimpappServlet
 ekw_admin
+element
+elemento
 elenca
 elenchi
 elenco
+ElencoTurni
 elfinder/elfinder.php
 elimina
 elmah.axd
@@ -3102,6 +3113,7 @@ export
 export/
 expressInstall.swf
 extjs/resources//charts.swf
+extlogin
 extra_admin
 ezadmin
 ezsqliteadmin/
@@ -3260,6 +3272,8 @@ Gemfile.lock
 GEMINI/
 general
 gestione
+GestioneModelliEmato
+GestioneRaggrTerapie
 get_file
 get.php
 getFile.cfm
@@ -3323,6 +3337,7 @@ groupadmin
 groupadmin.%EXT%
 Gruntfile.coffee
 Gruntfile.js
+GruppiUtenti
 gs/admin
 gs/plugins/editors/fckeditor
 gsadmin
@@ -3346,6 +3361,7 @@ head.%EXT%
 header
 header_admin.%EXT%
 headers
+headportal
 health
 heapdump
 heip65_admin.nsf
@@ -3493,6 +3509,7 @@ images/README
 images/Sym.php
 images01
 imail
+imemail
 img
 img_admin
 immagine
@@ -3756,6 +3773,7 @@ jssresource/
 JTAExtensionsSamples/docs/
 JTAExtensionsSamples/TransactionTracker
 JTAExtensionsSamples/TransactionTracker/
+juniorweb
 jwsdir
 k
 kadmin
@@ -3780,6 +3798,7 @@ lang/web.config
 language
 languages
 latest
+lavori
 lbadmin
 ldap.prop
 ldap.prop.sample
@@ -3842,6 +3861,7 @@ list
 list_emails
 lista
 listadmin
+ListaSegn
 liste
 listinfo
 lists
@@ -4160,6 +4180,8 @@ mese
 MessageDrivenBeans/docs/
 MessageDrivenBeans/docsservlet/
 messages
+messaggi
+messaggio
 meta_login/
 META-INF
 META-INF/context.xml
@@ -4249,6 +4271,7 @@ mw-config/
 mwaextraadmin4
 my_admin
 my-admin
+myaccount
 myaccount.%EXT%
 myadm/
 myadmin
@@ -4870,6 +4893,7 @@ posts
 power_user/
 pr
 pradmin
+prehome
 press
 print
 printenv
@@ -5251,6 +5275,8 @@ setup
 setup.php
 setup.sql
 setup/
+SFA_Login_Ambiente
+SFA_Login_Ambiente.asp
 sftp-config.json
 Sh3ll.php
 share
@@ -5399,6 +5425,7 @@ software
 sohoadmin
 solr/admin/
 solutions
+soluzioni
 source
 source.php
 source/
@@ -5462,6 +5489,7 @@ squirrelmail
 src
 ss_vms_admin_sm/
 ssadmin
+SSFA
 sshadmin/
 ssl_admin
 ssodad
@@ -5819,6 +5847,7 @@ TODO
 tools
 tools/_backups/
 top
+top100
 topic
 topicadmin
 topicadmin.%EXT%
@@ -5973,6 +6002,7 @@ usr/
 usuario/
 usuarios/
 usuarios/login.php
+Utenti
 utf8
 utilitiesadmin.%EXT%
 utility_login/
@@ -6026,6 +6056,7 @@ VERSIONS.txt
 video_upload
 view-source
 view.php
+vincitori
 visualizza
 vmailadmin/
 vorod
