@@ -8,16 +8,17 @@
 # Coded by: Riccardo Mollo (riccardomollo84@gmail.com)
 #
 
+#### TODO:
+#### - output file
+
 import argparse
-import getopt
 import os
-import re
-import requests
 import signal
 import socket
 import subprocess
 import sys
 import time
+import requests
 import urllib3
 import validators
 from fake_useragent import UserAgent
@@ -38,7 +39,7 @@ def logo():
 
 def test(url, ua, timeout):
     try:
-        r = requests.head(url, headers={'User-Agent': ua}, verify=False, timeout=(timeout, timeout))
+        r = requests.head(url, headers = {'User-Agent': ua}, verify = False, timeout=(timeout, timeout))
         ret = r.status_code
     except requests.ReadTimeout:
         ret = 408
@@ -79,7 +80,7 @@ def signal_handler(s, frame):
         print('Goodbye!')
         sys.exit()
 
-def main(argv):
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--url', help = 'The base URL to start the scan from', required = True)
     parser.add_argument('-w', '--wordlist', help = 'The file containing the wordlist', required = True)
@@ -92,21 +93,21 @@ def main(argv):
     base_url = args.url
 
     if not validators.url(base_url):
-        print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Invalid URL: ' + colored(base_url, 'red'))
+        print(colored('ERROR!', 'red', attrs = ['reverse', 'bold']) + ' Invalid URL: ' + colored(base_url, 'red'))
         print()
         sys.exit(1)
 
     wordlist_file = args.wordlist
 
     if not os.path.isfile(wordlist_file):
-        print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Wordlist file not found or not readable: ' + colored(wordlist_file, 'red'))
+        print(colored('ERROR!', 'red', attrs = ['reverse', 'bold']) + ' Wordlist file not found or not readable: ' + colored(wordlist_file, 'red'))
         print()
         sys.exit(1)
 
     mode = args.mode
 
-    if mode != 'dir' and mode != 'file':
-        print(colored('ERROR!', 'red', attrs=['reverse', 'bold']) + ' Invalid mode: ' + colored(mode, 'red'))
+    if mode not in ('dir', 'file'):
+        print(colored('ERROR!', 'red', attrs = ['reverse', 'bold']) + ' Invalid mode: ' + colored(mode, 'red'))
         print()
         sys.exit(1)
 
@@ -126,7 +127,7 @@ def main(argv):
         hostip = ''
 
     try:
-        ua = UserAgent(cache=False, fallback='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)').random
+        ua = UserAgent(cache = False, fallback = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)').random
     except fake_useragent.errors.FakeUserAgentError:
         ua = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
 
@@ -175,7 +176,4 @@ def main(argv):
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
-    main(sys.argv[1:])
-
-#### TODO:
-#### - output file
+    main()
